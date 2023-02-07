@@ -22,7 +22,7 @@ export const createNewBook = async (data, result) => {
 
 export const getAllBooks = async (data, result) => {
 	try {
-		db.query(`SELECT * FROM books ORDER BY id LIMIT ${Number(process.env.LIMIT)} OFFSET ${data}`, (err, results) => {
+		db.query(`SELECT * FROM books ORDER BY id`, (err, results) => {
 			if (err) {
 				return result(err, null)
 			}
@@ -94,8 +94,9 @@ export const getFilterModel = async(data, result) => {
 	try{
 		if(data.name || data.categoryName || data.author || data.createdate){
 			console.log('if')
-			db.query(`SELECT books.*, categories.name AS categoryName FROM books JOIN categories ON books.category = categories.id WHERE (books.createDate  LIKE "%${data.createdate
-			}%" OR books.name LIKE "%${data.name}%" OR categories.name LIKE "%${data.categoryName}%" OR author LIKE "%${data.author}%") ORDER BY name LIMIT ${Number(process.env.LIMIT)} OFFSET ${data.page}`, 
+			db.query(`SELECT books.*, categories.name AS categoryName FROM books JOIN categories ON books.category = categories.id WHERE (books.createDate 
+				 LIKE "%$1%" OR books.name LIKE "%$2%" OR categories.name LIKE "%$3%" OR author LIKE "%$4%") ORDER BY name LIMIT $5 OFFSET $6`,
+			[data.createdate,data.name, data.categoryName, data.author, Number(process.env.LIMIT), data.page],
 			data, (err, results) => {
 				if(err){
 					return result(err, null)
@@ -108,7 +109,7 @@ export const getFilterModel = async(data, result) => {
 		}
 		else{
 			console.log('else')
-			db.query(`SELECT books.*, categories.name AS categoryName FROM books JOIN categories ON books.category = categories.id ORDER BY books.id LIMIT ${Number(process.env.LIMIT)} OFFSET ${data.page}`, 
+			db.query(`SELECT books.*, categories.name AS categoryName FROM books JOIN categories ON books.category = categories.id ORDER BY books.id LIMIT $1 OFFSET $2`, [Number(process.env.LIMIT), data.page], 
 			data, async (err, results) => {
 				if(err){
 					return result(err, null)
