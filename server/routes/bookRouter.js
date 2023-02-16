@@ -30,12 +30,12 @@ router
     .get(getOneBook)
 
 router
-    .route('/count/')
-    .get(currentPage)
+    .route('/search')
+    .get(getFilterController)
 
-// router
-//     .route('/search')
-//     .get(getFilterController)
+router
+    .route('/addBook')
+    .post(createBook)
 
 export default router
 

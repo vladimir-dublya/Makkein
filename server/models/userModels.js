@@ -1,6 +1,7 @@
 import db from '../config/config.js'
 import bcrypt from 'bcrypt'
 import  jwt  from 'jsonwebtoken'
+import { secretKey } from '../secretKey.js'
 
 
 // export const createNewUser = async (data, result) => {
@@ -19,6 +20,15 @@ import  jwt  from 'jsonwebtoken'
 //     }
 // }
 
+const generateAccessToken = (id, roles) => {
+    const payload = {
+        id,
+        roles,
+    }
+
+    return jwt.sign(payload, secretKey, {expiresIn: "15m"});
+}
+ 
 
 export const regNewAdmin = async (data, result) => {
     const password = data.password ? data.password : null;
@@ -36,19 +46,16 @@ export const regNewAdmin = async (data, result) => {
                 if (err.sqlMessage.indexOf('login') !== -1) {
                     return result('login такой есть', null)
                 }
-    
             }
             else {
+
                 try {
                     getInfo({ id: results.insertId }, async (err, results) => {
-                        const token = jwt.sign(
-                            {
-                                id: results.id,
-                                role: results.role
-                            },
-                            'Y5u2g2aG5H2uVFe9pHy9'
+                        const token = generateAccessToken(
+                            results.id,
+                            results.role
                         )
-                        result(null, { token: token, data: results })
+                        return result(null, { token: token, data: results })
                     })
 
                 }
@@ -60,7 +67,8 @@ export const regNewAdmin = async (data, result) => {
         })
     }
     catch (err) {
-        console.log(err)
+        
+        console.log(error.parent.code)
     }
 }
 
@@ -100,17 +108,16 @@ export const loginAdmin = async(data, result) => {
                     return result('Неверный login или password', null)
                 }
 
-                const token = jwt.sign({id: results[0].id, role: results[0].role},
-                '54d5245296e6746882081a9c6aafcdf25e361cb6')
+                const token = generateAccessToken(results[0].id, results[0].role)
 
                 let {passwordHash, ...user} = results.pop()
-                result(null, {token: token, data: user})
+                return result(null, {token: token, data: user})
                 
             }
         })
     }
     catch(err){
         console.log(err)
-        result('Неверный login или password', null)
+        return result('Неверный login или password', null)
     }
 }

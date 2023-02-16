@@ -10,19 +10,29 @@ const storage = multer.diskStorage({
 		cb(null, 'uploads')
 	},
 	filename: async (_, file, cb) => {
-		const fileName = uuidv4().toString() + file.originalname
-		cb(null, fileName)
-	}
+        const fileName = uuidv4().toString() + '.' + file.originalname.split('.').pop().toString()
+        cb(null, fileName)
+    }
 })
 
-const upload = multer({ storage })
+const types = ['image/jpeg', 'image/png', 'image/jpg'];
+
+const fileFilter = (req, file, cb) => {
+	if (types.includes(file.mimetype)) {
+        cb(null, true)
+    } else {
+        cb(null, false)
+    }
+}
+
+
+const upload = await multer({ storage, fileFilter })
 
 router
 	.route('/')
-	.post(upload.single('image'), (req, res) => {
+	.post(upload.single('file'), async (req, res) => {
 		res.json({
 			url: `${process.env.MAIN_PATH}/uploads/${req.file.filename}`
 		})
-	})
-
+})
 export default router

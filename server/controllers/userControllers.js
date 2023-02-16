@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken"
 
 export const createUser = (req, res) => {
     try {
-        const data = req.body
+        const data = req.body;
         regNewAdmin(data, (err, results) => {
             if (err) {
                 res.status(400).json({
@@ -18,7 +18,7 @@ export const createUser = (req, res) => {
     }
     catch (err) {
         res.status(400).json({
-            message: 'error create'
+            message: err.message
         })
     }
 }
@@ -55,7 +55,7 @@ export const getUserInfo = (req, res) => {
 export const login = async (req, res) => {
     try {
         const data = req.body
-        await loginAdmin(data, (err, results) => {
+        loginAdmin(data, (err, results) => {
             if (err === 'Неверный login или password') {
                 res.status(401).json('Error login')
             }

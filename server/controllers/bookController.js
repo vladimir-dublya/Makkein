@@ -17,6 +17,7 @@ export const createBook = (req, res) => {
         const data = req.body
         createNewBook(data, (err, results) => {
             if (err) {
+                console.log(err);
                 res.status(400).json({
                     message: err
                 })
@@ -38,7 +39,6 @@ export const getBooks = (req, res) => {
     try {
         const currantPage = req.query.currantPage
         const data = (currantPage - 1) * Number(process.env.LIMIT)
-        // console.log(data)
 
         getAllBooks(data, (err, results) => {
             if (err) {
@@ -127,7 +127,6 @@ export const getOneBook = (req, res) => {
 
 export const getFilterController = (req, res) => {
     try {
-        const { name, createdate, category, author } = req.query
         let data = req.query
         
         getFilterModel(data, async (err, results) => {

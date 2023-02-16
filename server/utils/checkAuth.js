@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken"
-
+import { secretKey } from '../secretKey.js'
 export default (req, res, next) => {
     const token = (req.headers.authorization || '').replace(/Bearer\s?/, '')
 
     if(token){
         try{
-            const decoded = jwt.verify(token, 'Y5u2g2aG5H2uVFe9pHy9')
+            const decoded = jwt.verify(token, secretKey)
             req.userId = decoded.id 
             next()
         }
